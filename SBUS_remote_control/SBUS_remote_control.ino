@@ -29,7 +29,7 @@ short mow_pot;                // input potentiometer mow motor
 short throttle;               // throttle value
 short steering;               // steering value
 short expo_throttle = 0;      // expects a value between -100 and +100. recommend value= 0, 0=linear proportional curve, -100=progressive curve in the middle, +100=degressive curve in the middle
-short expo_steering = 30;     // expects a value between -100 and +100. recommend value=30, 0=linear proportional curve, -100=progressive curve in the middle, +100=degressive curve in the middle
+short expo_steering = 0;     // expects a value between -100 and +100. recommend value=30, 0=linear proportional curve, -100=progressive curve in the middle, +100=degressive curve in the middle
 short throttlecurve[2048];    // throttlecurve points array to save calculation time in loop
 short steeringcurve[2048];    // steeringcurve points array to save calculation time in loop
 short throttlewithexpo;       // throttle value mixed with expo
