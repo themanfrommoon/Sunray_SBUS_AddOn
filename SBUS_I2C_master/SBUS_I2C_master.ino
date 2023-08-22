@@ -24,17 +24,17 @@
   This sketch is used for testing the I²C functionality between the ESP32 Dev Module and NodeMCU ESP8266.
   The ESP32 sends the RC receiver data to the I²C bus and the ESP8266 prints the information on the serial monitor
 */
-
+#define SerialOutput       // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
 #include <Wire.h>
-short throttle;
-short steering;
-short motor_left;
-short motor_right;
-short motor_mow;
+short motor_left;          // +/-1023 motor left value
+short motor_right;         // +/-1023 motor right value
+short control_mode;        // control mode: "0"-automatic control, "1"-manual movement control without mow motor, "2"-manual movement control with running mow motor. If a failsafe occurs or if the RC transmitter is switched off, all motors are stopped and the usual automatic mode switches on again.
 
 void setup() {
-  Serial.begin(115200);
-  Wire.begin(); // Initialize I2C (Master Mode: address is optional)
+#ifdef SerialOutput       // serial output only active in "debugging mode"
+  Serial.begin(115200);   // start serial monitoring
+#endif
+  Wire.begin();           // Initialize I2C (Master Mode: address is optional)
 }
 
 // Read data from slave
@@ -47,31 +47,26 @@ short readShort() {
   return value;
 }
 
-void requestDataFromSlave() {
-
-  // Request From Slave @ 0x55, Data Length = 10 Bytes
+void requestDataFromSlave() {  // Request From Slave @ 0x55, Data Length = 10 Bytes
   if (Wire.requestFrom(0x55, 10) != 10) {
+#ifdef SerialOutput             // serial output only active in "debugging mode"
     Serial.print("error reading from slave");
+#endif
     return;
   };
-
-  throttle = readShort();
-  steering = readShort();
-  motor_left = readShort();
-  motor_right = readShort();
-  motor_mow = readShort();
+  motor_left = readShort();     // first value is motor_left value
+  motor_right = readShort();    // second value is motor_right value
+  control_mode = readShort();   // third value is control_mode value
 }
 
 void loop() {
   requestDataFromSlave();
-  Serial.print("\t");
-  Serial.print(throttle);
-  Serial.print("\t");
-  Serial.print(steering);
+#ifdef SerialOutput             // serial output only active in "debugging mode"
   Serial.print("\t");
   Serial.print(motor_left);
   Serial.print("\t");
   Serial.print(motor_right);
   Serial.print("\t");
-  Serial.println(motor_mow);
+  Serial.println(control_mode);
+#endif
 }
