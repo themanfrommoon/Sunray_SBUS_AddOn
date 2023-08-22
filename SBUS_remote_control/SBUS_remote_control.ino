@@ -8,6 +8,7 @@
 */
 // EXPO curve development see here: https://forum.arduino.cc/t/expo-einstellung-rc-mathematik/1150995
 
+#define SerialOutput          // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
 #include <Wire.h>
 #include "sbus.h"             // from https://github.com/bolderflight/sbus
 bfs::SbusRx sbus_rx(&Serial1, 16, 17, true);  // declaration of rx and tx pins between FrSky receiver and ESP32 dev board, we only need the rx
@@ -39,20 +40,16 @@ byte control_mode;            // output for control mode
 short motor_left;             // output for left motor
 short motor_right;            // output for right motor
 
-// send short integer over I2C
-void sendShort(short value) {
-  Wire.write((byte)(value >> 8)); // send highest 8 bits
-  Wire.write((byte)(value & 0xFF));  // send lowest 8 bits
+void sendShort(short value) {          // send short integer over I2C
+  Wire.write((byte)(value >> 8));      // send highest 8 bits
+  Wire.write((byte)(value & 0xFF));    // send lowest 8 bits
 }
 
-// I2C slave callback
-void I2C_TxHandler(void)
+void I2C_TxHandler(void)           // I2C slave callback
 {
-  //sendShort(throttle);
-  //sendShort(steering);
-  sendShort(motor_left);
-  sendShort(motor_right);
-  sendShort(control_mode);
+  sendShort(motor_left);           // first value is motor_left value
+  sendShort(motor_right);          // second value is motor_right value
+  sendShort(control_mode);         // third value is control_mode value
 }
 
 short expo_curve(short x, short expo) {                // expects input values from -1023 to +1023 and outputs values from -1023 to +1023. The 'only' change is the proportionality factor between input and output
@@ -71,9 +68,11 @@ short expo_curve(short x, short expo) {                // expects input values f
 }
 
 void setup() {
+#ifdef SerialOutput       // serial output only active in "debugging mode"
   Serial.begin(115200);
   while (!Serial) {}
-  sbus_rx.Begin();
+#endif
+  sbus_rx.Begin();        // begin the SBUS communication
   for (int x = -1023; x <= 1023; x++) {             // calculates throttlecurve and steeringcurve and store all curvepoints in arrays.
     throttlecurve[x + 1023] = expo_curve(x, expo_throttle);
     steeringcurve[x + 1023] = expo_curve(x, expo_steering);
@@ -84,7 +83,7 @@ void setup() {
 
 void loop () {
   if (sbus_rx.Read()) {
-    data = sbus_rx.data();
+    data = sbus_rx.data();     // grab the received data
     // --------------------throttle stick--------------------
     throttle_stick = data.ch[0];
     if (throttle_stick > throttle_mid + throttle_deadband / 2) {
@@ -124,7 +123,9 @@ void loop () {
 
     // --------------------failsafe--------------------
     if (data.failsafe > 0) {
+#ifdef SerialOutput       // serial output only active in "debugging mode"
       Serial.print("failsafe");    // if a failsafe is recognized by the FrSky receiver
+#endif
       throttle = 0;
       steering = 0;
       motor_left = 0;
@@ -133,7 +134,9 @@ void loop () {
 
     }
     else {
+#ifdef SerialOutput       // serial output only active in "debugging mode"
       Serial.print("running");    // if no failsafe is recognized by the FrSky receiver
+#endif
     }
 
     // --------------------throttle and steering with expo--------------------
@@ -179,6 +182,7 @@ void loop () {
     }
 
     // --------------------serial print values--------------------
+#ifdef SerialOutput       // serial output only active in "debugging mode"
     Serial.print("\t");
     Serial.print("\t");
     //Serial.print(throttle);
@@ -190,5 +194,6 @@ void loop () {
     Serial.print(motor_right);
     Serial.print("\t");
     Serial.println(control_mode);
+#endif
   }
 }
