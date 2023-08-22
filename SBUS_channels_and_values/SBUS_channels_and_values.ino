@@ -27,7 +27,7 @@
   themanfrommoon Christian Wulff 01.08.2023:
 
   Slightly modified code from the original Bolder Flight Systems SBUS library example "sbus_example.ino"
-  
+
   Compiled successfully with:
   Arduino IDE 1.8.19
   Espressif Systems board manager "esp32" Version 2.0.11
@@ -37,7 +37,7 @@
   used Hardware:
   FrSky X4R Receiver
   ESP32 Dev Module
-  
+
   Connections:
   FrSky X4R Receiver ----- ESP32 Dev Module
               (-)    -----    GND
@@ -46,48 +46,39 @@
 
   FrSky Protocol Mode: ACCST D16
 
-Description:
-This sketch reads the SBUS protocol from the FrSky receiver and prints all 16 analog and 2 digital channels to the serial monitor.
-It is used to check the connection, which channels you like to use and which values these channels have in min, mid and max position.
-These information are needed for the main sketch.
+  Description:
+  This sketch reads the SBUS protocol from the FrSky receiver and prints all 16 analog and 2 digital channels to the serial monitor.
+  It is used to check the connection, which channels you like to use and which values these channels have in min, mid and max position.
+  These information are needed for the main sketch.
 
-Refer to the original author Brian R Taylor which hardware can be used: https://github.com/bolderflight/sbus
-ATTENTION: There is also a hint, that there may be issues with installing the library by the library manager in the Arduino IDE.
-It is recommend to install the library manual (copy the library into the library path manually)
+  Refer to the original author Brian R Taylor which hardware can be used: https://github.com/bolderflight/sbus
+  ATTENTION: There is also a hint, that there may be issues with installing the library by the library manager in the Arduino IDE.
+  It is recommend to install the library manual (copy the library into the library path manually)
 
-The lines for SBUS transmission has been removed because they are not needed here.
+  The lines for SBUS transmission has been removed because they are not needed here.
 
-ATTENTION: If the upload doies not work you may have to press the BOOT button of the ESP32 Dev module during the upload!
+  ATTENTION: If the upload does not work you may have to press the BOOT button of the ESP32 Dev module during the upload!
 */
 
 #include "sbus.h"
-
-/* SBUS object, reading SBUS */
-bfs::SbusRx sbus_rx(&Serial1, 16, 17, true);       // this line is specially adapted for ESP32 use!!!
-
-/* SBUS data */
-bfs::SbusData data;
+bfs::SbusRx sbus_rx(&Serial1, 16, 17, true);   // SBUS object, reading SBUS. this line is specially adapted for ESP32 use!!! The GPIO 17 is not needed, but needs to be defiend (it is needed for sending data, but we send no data to the receiver)
+bfs::SbusData data;                            // SBUS data
 
 void setup() {
-  /* Serial to display data */
-  Serial.begin(115200);
+  Serial.begin(115200);                        // start serial monitoring to display data
   while (!Serial) {}
-  /* Begin the SBUS communication */
-  sbus_rx.Begin();
+  sbus_rx.Begin();                             // begin the SBUS communication
 }
 
 void loop () {
   if (sbus_rx.Read()) {
-    /* Grab the received data */
-    data = sbus_rx.data();
-    /* Display the received data */
-    for (int8_t i = 0; i < data.NUM_CH; i++) {
+    data = sbus_rx.data();                         // grab the received data
+    for (int8_t i = 0; i < data.NUM_CH; i++) {     // display the received data
       Serial.print(data.ch[i]);
       Serial.print("\t");
     }
-    /* Display lost frames and failsafe data */
-    Serial.print(data.lost_frame);
+    Serial.print(data.lost_frame);             // Display lost frames
     Serial.print("\t");
-    Serial.println(data.failsafe);
+    Serial.println(data.failsafe);             // Display failsafe data
   }
 }
