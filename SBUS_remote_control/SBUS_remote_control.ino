@@ -8,7 +8,7 @@
 */
 // EXPO curve development see here: https://forum.arduino.cc/t/expo-einstellung-rc-mathematik/1150995
 
-#define SerialOutput          // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
+//#define SerialOutput          // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
 #include <Wire.h>
 #include "sbus.h"             // from https://github.com/bolderflight/sbus
 bfs::SbusRx sbus_rx(&Serial1, 16, 17, true);  // declaration of rx and tx pins between FrSky receiver and ESP32 dev board, we only need the rx
@@ -47,9 +47,9 @@ void sendShort(short value) {          // send short integer over I2C
 
 void I2C_TxHandler(void)           // I2C slave callback
 {
-  sendShort(motor_left);           // first value is motor_left value
-  sendShort(motor_right);          // second value is motor_right value
-  sendShort(control_mode);         // third value is control_mode value
+  sendShort(control_mode);         // first value is control_mode value
+  sendShort(motor_left);           // second value is motor_left value
+  sendShort(motor_right);          // third value is motor_right value
 }
 
 short expo_curve(short x, short expo) {                // expects input values from -1023 to +1023 and outputs values from -1023 to +1023. The 'only' change is the proportionality factor between input and output
@@ -128,10 +128,9 @@ void loop () {
 #endif
       throttle = 0;
       steering = 0;
+      control_mode = 0;
       motor_left = 0;
       motor_right = 0;
-      control_mode = 0;
-
     }
     else {
 #ifdef SerialOutput       // serial output only active in "debugging mode"
@@ -185,15 +184,15 @@ void loop () {
 #ifdef SerialOutput       // serial output only active in "debugging mode"
     Serial.print("\t");
     Serial.print("\t");
+    Serial.print(control_mode);
+    Serial.print("\t");
     //Serial.print(throttle);
     //Serial.print("\t");
     //Serial.print(steering);
     //Serial.print("\t");
     Serial.print(motor_left);
     Serial.print("\t");
-    Serial.print(motor_right);
-    Serial.print("\t");
-    Serial.println(control_mode);
+    Serial.println(motor_right);
 #endif
   }
 }

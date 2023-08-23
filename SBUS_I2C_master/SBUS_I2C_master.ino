@@ -24,11 +24,12 @@
   This sketch is used for testing the I²C functionality between the ESP32 Dev Module and NodeMCU ESP8266.
   The ESP32 sends the RC receiver data to the I²C bus and the ESP8266 prints the information on the serial monitor
 */
-#define SerialOutput       // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
+
+//#define SerialOutput       // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
 #include <Wire.h>
+short control_mode;        // control mode: "0"-automatic control, "1"-manual movement control without mow motor, "2"-manual movement control with running mow motor. If a failsafe occurs or if the RC transmitter is switched off, all motors are stopped and the usual automatic mode switches on again.
 short motor_left;          // +/-1023 motor left value
 short motor_right;         // +/-1023 motor right value
-short control_mode;        // control mode: "0"-automatic control, "1"-manual movement control without mow motor, "2"-manual movement control with running mow motor. If a failsafe occurs or if the RC transmitter is switched off, all motors are stopped and the usual automatic mode switches on again.
 
 void setup() {
 #ifdef SerialOutput       // serial output only active in "debugging mode"
@@ -54,19 +55,19 @@ void requestDataFromSlave() {  // Request From Slave @ 0x55, Data Length = 10 By
 #endif
     return;
   };
-  motor_left = readShort();     // first value is motor_left value
-  motor_right = readShort();    // second value is motor_right value
-  control_mode = readShort();   // third value is control_mode value
+  control_mode = readShort();   // first value is control_mode value
+  motor_left = readShort();     // second value is motor_left value
+  motor_right = readShort();    // third value is motor_right value
 }
 
 void loop() {
   requestDataFromSlave();
 #ifdef SerialOutput             // serial output only active in "debugging mode"
   Serial.print("\t");
+  Serial.print(control_mode);
+  Serial.print("\t");
   Serial.print(motor_left);
   Serial.print("\t");
-  Serial.print(motor_right);
-  Serial.print("\t");
-  Serial.println(control_mode);
+  Serial.println(motor_right);
 #endif
 }
