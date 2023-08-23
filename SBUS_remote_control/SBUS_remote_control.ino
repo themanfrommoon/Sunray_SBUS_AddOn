@@ -8,7 +8,7 @@
 */
 // EXPO curve development see here: https://forum.arduino.cc/t/expo-einstellung-rc-mathematik/1150995
 
-#define SerialOutput          // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
+//#define SerialOutput          // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
 #include <Wire.h>
 #include "sbus.h"             // from https://github.com/bolderflight/sbus
 bfs::SbusRx sbus_rx(&Serial1, 16, 17, true);  // declaration of rx and tx pins between FrSky receiver and ESP32 dev board, we only need the rx
