@@ -25,7 +25,7 @@
   The ESP32 sends the RC receiver data to the I²C bus and the ESP8266 prints the information on the serial monitor
 */
 
-#define SerialOutput       // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
+//#define SerialOutput       // Switch on/off serial monitor output "debugging mode" (uncomment for productive use, only useful for debugging)
 #include <Wire.h>
 short control_mode;        // control mode: "0"-automatic control, "1"-manual movement control without mow motor, "2"-manual movement control with running mow motor. If a failsafe occurs or if the RC transmitter is switched off, all motors are stopped and the usual automatic mode switches on again.
 short motor_left;          // +/-1023 motor left value
