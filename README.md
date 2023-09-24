@@ -1,7 +1,7 @@
 # Sunray_SBUS_AddOn
 Sunray remote control via SBUS (e.g. FrSky)
 
-With this add-on for Alexander Grau's Sunray Software (https://github.com/Ardumower/Sunray) you can add manual remote control to your Alfred (and Ardumower?).
+With this add-on for Alexander Grau's Ardumower Sunray Software (https://github.com/Ardumower/Sunray) you can add manual remote control to your Alfred (and Ardumower?).
 
 An SBUS receiver (e.g. FrSKy) is used to receive the remote control data and an ESP32 Dev Board is used for post-processing and converting the data to an I²C interface.
 
