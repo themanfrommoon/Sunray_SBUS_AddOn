@@ -11,3 +11,16 @@ There are three operation modes which can be choosen from the rc transmitter:
 3. Manual movement control with running mow motor
    
 If a failsafe occurs or if the RC transmitter is switched off, all motors are stopped and the usual automatic mode switches on again.
+
+
+### Change pin assignment
+
+
+Sample Picture:
+
+![NodeMCU-ESP32](docs/remote_control.png)
+
+![NodeMCU-ESP32](docs/nodemcu-esp32.png)
+
+Also supported: Board with Ethernet-Connector and Power-over-Ethernet [Olimex 
+
